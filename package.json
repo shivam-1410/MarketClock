@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "test": "npm run test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present",
+    "build:packages": "npm run build --workspace=packages/market-clock && npm run build --workspace=packages/bin-scheduler",
+    "build": "npm run build:packages && npm run build --workspaces --if-present",
     "dev:web": "npm run dev --workspace=apps/web",
     "start:keeper": "npm run start --workspace=packages/keeper",
     "run:backtest": "npm run start --workspace=packages/backtest"

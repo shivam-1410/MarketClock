@@ -48,12 +48,14 @@ export class RebalanceLogger {
     this.ensureDir(path.dirname(this.logPath));
     fs.writeFileSync(this.logPath, serialized, "utf-8");
 
-    // Mirror to web directory if it exists or can be created
-    try {
-      this.ensureDir(WEB_DATA_DIR);
-      fs.writeFileSync(WEB_LOG_FILE, serialized, "utf-8");
-    } catch {
-      // Non-critical mirror failure
+    // Mirror to web directory if default keeper log file (not in tests)
+    if (this.logPath === KEEPER_LOG_FILE) {
+      try {
+        this.ensureDir(WEB_DATA_DIR);
+        fs.writeFileSync(WEB_LOG_FILE, serialized, "utf-8");
+      } catch {
+        // Non-critical mirror failure
+      }
     }
   }
 
@@ -61,11 +63,13 @@ export class RebalanceLogger {
     if (!fs.existsSync(this.logPath) || this.getLogs().length === 0) {
       this.ensureDir(path.dirname(this.logPath));
       fs.writeFileSync(this.logPath, JSON.stringify(seedEntries, null, 2), "utf-8");
-      try {
-        this.ensureDir(WEB_DATA_DIR);
-        fs.writeFileSync(WEB_LOG_FILE, JSON.stringify(seedEntries, null, 2), "utf-8");
-      } catch {
-        // Ignore
+      if (this.logPath === KEEPER_LOG_FILE) {
+        try {
+          this.ensureDir(WEB_DATA_DIR);
+          fs.writeFileSync(WEB_LOG_FILE, JSON.stringify(seedEntries, null, 2), "utf-8");
+        } catch {
+          // Ignore
+        }
       }
     }
   }
