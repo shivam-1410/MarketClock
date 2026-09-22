@@ -1,0 +1,16 @@
+{
+  "name": "@market-clock/core",
+  "version": "1.0.0",
+  "description": "Pure TypeScript MarketClock state machine and 2026 NYSE calendar engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "keywords": ["market-clock", "nyse", "solana", "meteora", "dlmm"],
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

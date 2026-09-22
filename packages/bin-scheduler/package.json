@@ -1,0 +1,18 @@
+{
+  "name": "@market-clock/bin-scheduler",
+  "version": "1.0.0",
+  "description": "Bin range math and DLMM strategy scheduler for MarketClock",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@market-clock/core": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

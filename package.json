@@ -1,0 +1,27 @@
+{
+  "name": "market-clock-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MarketClock: Schedule-Aware Liquidity Manager for Meteora DLMM",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "start:keeper": "npm run start --workspace=packages/keeper",
+    "run:backtest": "npm run start --workspace=packages/backtest"
+  },
+  "keywords": [
+    "solana",
+    "meteora",
+    "dlmm",
+    "amm",
+    "rwa",
+    "tokenized-stocks"
+  ],
+  "author": "MarketClock Team",
+  "license": "MIT"
+}

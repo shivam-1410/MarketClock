@@ -1,0 +1,20 @@
+{
+  "name": "@market-clock/backtest",
+  "version": "1.0.0",
+  "description": "Comparative backtest & gap simulation engine for MarketClock vs Static DLMM LP",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/runner.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@market-clock/bin-scheduler": "1.0.0",
+    "@market-clock/core": "1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

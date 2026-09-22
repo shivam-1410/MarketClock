@@ -1,0 +1,51 @@
+{
+  "scenarioName": "SYNTHETIC SCENARIO: Friday Close to Monday Open Gap",
+  "disclaimer": "HONEST DISCLOSURE: This simulation is a synthetic model calibrated against Meteora DLMM discrete bin math and dynamic-fee volatility accumulator mechanics. Labeled synthetic per hackathon guidelines.",
+  "tokenPair": "TSLA / USDC (Tokenized Equity DLMM)",
+  "timeWindow": "Friday 16:00 ET (Close) -> Monday 09:30 ET (Open) [65.5 Hours]",
+  "priceMovement": {
+    "startPrice": 184.5,
+    "endPrice": 191.51,
+    "priceShockPct": 3.8,
+    "shockEvent": "Off-market Sunday macro/earnings surprise triggering +3.8% fair value repricing."
+  },
+  "marketClock": {
+    "strategyName": "MarketClock Schedule-Aware Reshaper",
+    "isBaseline": false,
+    "initialTvlUsd": 100000,
+    "finalTvlUsd": 100645.01,
+    "feesEarnedUsd": 665,
+    "feesEarnedPct": 0.67,
+    "adverseSelectionLossUsd": 19.99,
+    "adverseSelectionLossPct": 0.02,
+    "netPnlUsd": 645.01,
+    "netPnlPct": 0.65,
+    "maxDrawdownPct": 0.02,
+    "capitalEfficiencyRatio": 33.26,
+    "binsTraversed": 15,
+    "summary": "Reshaped to defensive wide Spot range at Friday 16:00 close; elevated dynamic fees captured arbitrage flow while wide spacing protected 68% of capital from adverse selection."
+  },
+  "staticBaseline": {
+    "strategyName": "Static Concentrated LP (±25 Bins Baseline)",
+    "isBaseline": true,
+    "initialTvlUsd": 100000,
+    "finalTvlUsd": 100161.6,
+    "feesEarnedUsd": 262.5,
+    "feesEarnedPct": 0.26,
+    "adverseSelectionLossUsd": 100.9,
+    "adverseSelectionLossPct": 0.1,
+    "netPnlUsd": 161.6,
+    "netPnlPct": 0.16,
+    "maxDrawdownPct": 0.1,
+    "capitalEfficiencyRatio": 1.6,
+    "binsTraversed": 15,
+    "summary": "Statically concentrated liquidity suffered extreme adverse selection as off-hours arbitrageurs stripped stale inventory before Monday open."
+  },
+  "delta": {
+    "netPnlAdvantageUsd": 483.41,
+    "netPnlAdvantagePct": 0.49,
+    "adverseSelectionAvoidedUsd": 80.91,
+    "feeImprovementUsd": 402.5
+  },
+  "generatedAt": "2026-09-22T08:58:32.442Z"
+}

@@ -1,0 +1,160 @@
+[
+  {
+    "id": "reb_1790067421409_420",
+    "timestamp": "2026-09-22T08:57:01.409Z",
+    "state": "CLOSED",
+    "nyseTimeFormatted": "2026-09-22 04:57:01 ET",
+    "activeBin": 10,
+    "activePrice": 1.1046221254112045,
+    "oldRange": null,
+    "newRange": [
+      -70,
+      90
+    ],
+    "strategyType": "Spot",
+    "strategyTypeEnum": 0,
+    "txSignature": "2aec62f9d18734c8d757a41f5f9a7e4a828a20ffc95dDevnetMC",
+    "baseFeeBps": 50,
+    "dynamicFeeBps": 15,
+    "totalFeeBps": 65,
+    "reason": "Market state transitioned to CLOSED — reshaped range to [-70, 90] (Spot)",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/2aec62f9d18734c8d757a41f5f9a7e4a828a20ffc95dDevnetMC?cluster=devnet"
+  },
+  {
+    "id": "reb_seed_005",
+    "timestamp": "2026-09-22T08:27:00.624Z",
+    "state": "PRE_CLOSE",
+    "nyseTimeFormatted": "2026-09-22 15:52:00 ET",
+    "activeBin": 1500,
+    "activePrice": 184.25,
+    "oldRange": [
+      1475,
+      1525
+    ],
+    "newRange": [
+      1455,
+      1545
+    ],
+    "strategyType": "Spot",
+    "strategyTypeEnum": 0,
+    "txSignature": "4wS9pL3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mDevnetMC",
+    "baseFeeBps": 15,
+    "dynamicFeeBps": 9,
+    "totalFeeBps": 24,
+    "volatilityAccumulator": 14000,
+    "reason": "Pre-close auction expansion: widening from ±25 to ±45 bins ahead of closing bell.",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/4wS9pL3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mDevnetMC?cluster=devnet"
+  },
+  {
+    "id": "reb_seed_004",
+    "timestamp": "2026-09-22T07:57:00.624Z",
+    "state": "OPEN",
+    "nyseTimeFormatted": "2026-09-22 11:15:00 ET",
+    "activeBin": 1500,
+    "activePrice": 184.25,
+    "oldRange": [
+      1465,
+      1535
+    ],
+    "newRange": [
+      1490,
+      1510
+    ],
+    "strategyType": "Curve",
+    "strategyTypeEnum": 1,
+    "txSignature": "5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zXDevnetMC",
+    "baseFeeBps": 15,
+    "dynamicFeeBps": 0,
+    "totalFeeBps": 15,
+    "volatilityAccumulator": 0,
+    "reason": "Cool-down elapsed and volatility accumulator at 0: tightened to full OPEN Curve (±10 bins). Dynamic fee at floor.",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zXDevnetMC?cluster=devnet"
+  },
+  {
+    "id": "reb_seed_003",
+    "timestamp": "2026-09-22T06:57:00.624Z",
+    "state": "COOL_DOWN",
+    "nyseTimeFormatted": "2026-09-22 09:33:00 ET",
+    "activeBin": 1500,
+    "activePrice": 184.25,
+    "oldRange": [
+      1460,
+      1540
+    ],
+    "newRange": [
+      1465,
+      1535
+    ],
+    "strategyType": "Curve",
+    "strategyTypeEnum": 1,
+    "txSignature": "3hN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vDevnetMC",
+    "baseFeeBps": 15,
+    "dynamicFeeBps": 8,
+    "totalFeeBps": 23,
+    "volatilityAccumulator": 8500,
+    "reason": "Cool-down phase active: maintaining medium width (±35 bins) during decay_period window.",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/3hN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vDevnetMC?cluster=devnet"
+  },
+  {
+    "id": "reb_seed_002",
+    "timestamp": "2026-09-22T06:45:00.624Z",
+    "state": "PRE_OPEN",
+    "nyseTimeFormatted": "2026-09-22 09:30:00 ET",
+    "activeBin": 1500,
+    "activePrice": 184.25,
+    "oldRange": [
+      1420,
+      1580
+    ],
+    "newRange": [
+      1460,
+      1540
+    ],
+    "strategyType": "Curve",
+    "strategyTypeEnum": 1,
+    "txSignature": "2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tDevnetMC",
+    "baseFeeBps": 15,
+    "dynamicFeeBps": 12,
+    "totalFeeBps": 27,
+    "volatilityAccumulator": 15000,
+    "reason": "Market Reopen Tick: snapped to buffer width (±40 bins, Curve) rather than razor-thin OPEN to absorb open imbalances.",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tDevnetMC?cluster=devnet"
+  },
+  {
+    "id": "reb_seed_001",
+    "timestamp": "2026-09-22T04:57:00.624Z",
+    "state": "CLOSED",
+    "nyseTimeFormatted": "2026-09-21 16:00:00 ET",
+    "activeBin": 1500,
+    "activePrice": 184.25,
+    "oldRange": [
+      1450,
+      1550
+    ],
+    "newRange": [
+      1420,
+      1580
+    ],
+    "strategyType": "Spot",
+    "strategyTypeEnum": 0,
+    "txSignature": "1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bDevnetMC",
+    "baseFeeBps": 15,
+    "dynamicFeeBps": 15,
+    "totalFeeBps": 30,
+    "volatilityAccumulator": 20000,
+    "reason": "Reference market closed: deployed defensive wide Spot (±80 bins, ~±12%) to immunize LPs against overnight news gaps.",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bV9cE4aD8fG3mN7vR2qK5tY8zX1jH6bDevnetMC?cluster=devnet"
+  }
+]

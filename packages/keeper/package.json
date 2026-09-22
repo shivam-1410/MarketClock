@@ -1,0 +1,27 @@
+{
+  "name": "@market-clock/keeper",
+  "version": "1.0.0",
+  "description": "Solana keeper bot for schedule-aware Meteora DLMM liquidity management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/runner.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@market-clock/bin-scheduler": "1.0.0",
+    "@market-clock/core": "1.0.0",
+    "@meteora-ag/dlmm": "^1.3.0",
+    "@solana/spl-token": "^0.4.6",
+    "@solana/web3.js": "^1.91.8",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
