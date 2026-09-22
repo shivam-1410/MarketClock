@@ -304,6 +304,14 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full space-y-16 md:space-y-20">
         {/* Section 1: Hero Radial Dial (Floating prominently with generous whitespace) */}
         <section id="hero-clock" className="pt-4 pb-6 md:pt-6 md:pb-10 flex flex-col items-center">
+          <div className="text-center mb-6">
+            <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
+              Section 1 • 24h NYSE Market State Engine
+            </h2>
+            <p className="text-xs font-sans text-graphite-500 mt-0.5">
+              Pure deterministic state machine aligned to Wall Street market sessions and trading hours.
+            </p>
+          </div>
           <MarketClockDial
             stateResult={stateResult}
             selectedTimeMode={selectedTimeMode}
@@ -315,7 +323,7 @@ export default function Home() {
         <section id="bin-heatmap">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h2 className="font-mono text-xs uppercase tracking-wider text-graphite-500 font-semibold">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
                 Section 2 • Live DLMM Liquidity Profile
               </h2>
               <p className="text-xs font-sans text-graphite-500 mt-0.5">
@@ -342,7 +350,7 @@ export default function Home() {
           {/* Section 3: Session Ticker / Structured Keeper Telemetry */}
           <section id="session-ticker" className="flex flex-col">
             <div className="mb-3">
-              <h2 className="font-mono text-xs uppercase tracking-wider text-graphite-500 font-semibold">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
                 Section 3 • Keeper Rebalance Event Log
               </h2>
               <p className="text-xs font-sans text-graphite-500 mt-0.5">
@@ -355,7 +363,7 @@ export default function Home() {
           {/* Section 4: Impact Panel / Comparative Simulation */}
           <section id="impact-panel" className="flex flex-col">
             <div className="mb-3">
-              <h2 className="font-mono text-xs uppercase tracking-wider text-graphite-500 font-semibold">
+              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
                 Section 4 • Capital Protection Impact
               </h2>
               <p className="text-xs font-sans text-graphite-500 mt-0.5">

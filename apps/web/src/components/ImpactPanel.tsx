@@ -59,12 +59,12 @@ export const ImpactPanel: React.FC<ImpactPanelProps> = ({ data }) => {
       {/* Header with Disclosure */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-graphite-800 pb-4">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-graphite-500 block">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-graphite-500 font-medium block">
             Comparative Gap Analysis (Friday Close ➔ Monday Open)
           </span>
-          <h2 className="font-sans text-lg font-bold text-graphite-100 mt-0.5">
+          <h3 className="font-mono text-sm font-semibold text-graphite-200 mt-1">
             MarketClock Reshaper vs. Static 60-Bin DLMM LP
-          </h2>
+          </h3>
         </div>
 
         {/* Honest Disclosure Tag */}

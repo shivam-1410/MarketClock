@@ -59,7 +59,7 @@ export const SessionTicker: React.FC<SessionTickerProps> = ({ logs }) => {
             <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
             <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
           </div>
-          <span className="font-mono text-xs uppercase tracking-wider text-graphite-500 font-semibold ml-2">
+          <span className="font-mono text-[11px] text-graphite-400 font-medium ml-1.5">
             Meteora DLMM Keeper Telemetry Feed
           </span>
           <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-graphite-800 text-graphite-100 border border-graphite-700">

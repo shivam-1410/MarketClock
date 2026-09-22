@@ -99,7 +99,7 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
       {/* Header bar with metrics */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-graphite-800 pb-5">
         <div>
-          <span className="text-xs font-mono uppercase tracking-wider text-graphite-500">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-graphite-500 font-medium block">
             Active DLMM Reference
           </span>
           <div className="flex items-baseline gap-3 mt-1">
@@ -115,7 +115,7 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
         {/* Dynamic Fee Engine Telemetry */}
         <div className="bg-graphite-850 border border-graphite-800 px-4 py-2.5 rounded-xl flex items-center gap-4">
           <div>
-            <span className="text-[11px] font-mono text-graphite-500 uppercase block">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-graphite-500 font-medium block">
               Total DLMM Fee
             </span>
             <span className="font-mono text-lg font-bold" style={{ color: stateColor }}>
@@ -138,7 +138,7 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
 
         {/* Managed Range Parameters */}
         <div className="text-right">
-          <span className="text-xs font-mono uppercase tracking-wider text-graphite-500 block">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-graphite-500 font-medium block">
             Keeper Position Width
           </span>
           <div className="mt-1 flex items-center gap-2 justify-end">

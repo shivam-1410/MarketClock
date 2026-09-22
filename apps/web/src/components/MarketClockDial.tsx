@@ -278,10 +278,10 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
             <circle cx="160" cy="160" r="3.5" fill="#E8E9EC" />
           </svg>
 
-          {/* Center Overlay Time Badge */}
+          {/* Center Overlay Time Badge (Tier 1 Display) */}
           <div className="absolute flex flex-col items-center pointer-events-none mt-20">
-            <span className="font-mono text-[10px] text-graphite-500 tracking-wider uppercase">NYSE Time</span>
-            <span className="font-mono text-sm font-semibold text-graphite-100">
+            <span className="font-mono text-[10px] font-medium text-graphite-400 tracking-widest uppercase">NYSE Time</span>
+            <span className="font-mono text-base font-bold text-white tracking-tight">
               {String(nyseLocalTime.hour).padStart(2, "0")}:{String(nyseLocalTime.minute).padStart(2, "0")}:{String(nyseLocalTime.second).padStart(2, "0")} ET
             </span>
           </div>
@@ -313,12 +313,12 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
           <span className="text-graphite-100">{stateTheme.label}</span>
         </div>
 
-        {/* Countdown */}
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="font-mono text-3xl md:text-4xl font-bold tracking-tight text-graphite-100">
+        {/* Countdown (Tier 1 Display: Monospace, Largest, Highest Contrast) */}
+        <div className="mt-3 flex items-baseline gap-2.5">
+          <span className="font-mono text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_2px_16px_rgba(255,255,255,0.15)]">
             {formatCountdown(nextTransition.remainingSeconds)}
           </span>
-          <span className="font-mono text-xs uppercase tracking-wider text-graphite-500">
+          <span className="font-mono text-xs uppercase tracking-widest text-graphite-400 font-semibold">
             to {nextTransition.targetState}
           </span>
         </div>
