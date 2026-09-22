@@ -12,6 +12,10 @@ import { BinLiquidityHeatmap } from "@/components/BinLiquidityHeatmap";
 import { SessionTicker, RebalanceLogItem } from "@/components/SessionTicker";
 import { ImpactPanel, BacktestData } from "@/components/ImpactPanel";
 import { Footer } from "@/components/Footer";
+import { NavigationTabs, ActiveTabId } from "@/components/NavigationTabs";
+import { DbcLaunchpadStudio } from "@/components/DbcLaunchpadStudio";
+import { PresetMarketplace } from "@/components/PresetMarketplace";
+import { DevDataStreamPanel } from "@/components/DevDataStreamPanel";
 
 // Fallback seed telemetry in case initial fetch is pending
 const INITIAL_LOGS_FALLBACK: RebalanceLogItem[] = [
@@ -159,6 +163,7 @@ const BACKTEST_FALLBACK: BacktestData = {
 };
 
 export default function Home() {
+  const [activeTab, setActiveTab] = React.useState<ActiveTabId>("reshaper");
   const [selectedTimeMode, setSelectedTimeMode] = React.useState<string>("LIVE");
   const [currentTime, setCurrentTime] = React.useState<Date>(new Date());
   const [logs, setLogs] = React.useState<RebalanceLogItem[]>(INITIAL_LOGS_FALLBACK);
@@ -380,79 +385,95 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Container (Single Scroll for Judges) */}
+      {/* Unified Navigation Hub Tabs */}
+      <NavigationTabs activeTab={activeTab} onSelectTab={setActiveTab} />
+
+      {/* Main Content Container */}
       <div className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full space-y-16 md:space-y-20">
-        {/* Section 1: Hero Radial Dial (Floating prominently with generous whitespace) */}
-        <section id="hero-clock" className="pt-4 pb-6 md:pt-6 md:pb-10 flex flex-col items-center">
-          <div className="text-center mb-6">
-            <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
-              Section 1 • 24h NYSE Market State Engine
-            </h2>
-            <p className="text-xs font-sans text-graphite-500 mt-0.5">
-              Pure deterministic state machine aligned to Wall Street market sessions and trading hours.
-            </p>
-          </div>
-          <MarketClockDial
-            stateResult={stateResult}
-            selectedTimeMode={selectedTimeMode}
-            onSelectTimeMode={handleSelectTimeMode}
-          />
-        </section>
+        {activeTab === "reshaper" && (
+          <>
+            {/* Section 1: Hero Radial Dial (Floating prominently with generous whitespace) */}
+            <section id="hero-clock" className="pt-4 pb-6 md:pt-6 md:pb-10 flex flex-col items-center">
+              <div className="text-center mb-6">
+                <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
+                  Section 1 • 24h NYSE Market State Engine
+                </h2>
+                <p className="text-xs font-sans text-graphite-500 mt-0.5">
+                  Pure deterministic state machine aligned to Wall Street market sessions and trading hours.
+                </p>
+              </div>
+              <MarketClockDial
+                stateResult={stateResult}
+                selectedTimeMode={selectedTimeMode}
+                onSelectTimeMode={handleSelectTimeMode}
+              />
+            </section>
 
-        {/* Section 2: Active Bin Liquidity Heatmap */}
-        <section id="bin-heatmap">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
-                Section 2 • Live DLMM Liquidity Profile
-              </h2>
-              <p className="text-xs font-sans text-graphite-500 mt-0.5">
-                Dynamic bin distribution automatically reshaped around Wall Street session hours.
-              </p>
-            </div>
-            <div className="text-right font-mono text-xs text-graphite-500">
-              Bin Step: <span className="text-graphite-100">25 bps (0.25%)</span>
-            </div>
-          </div>
+            {/* Section 2: Active Bin Liquidity Heatmap */}
+            <section id="bin-heatmap">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
+                    Section 2 • Live DLMM Liquidity Profile
+                  </h2>
+                  <p className="text-xs font-sans text-graphite-500 mt-0.5">
+                    Dynamic bin distribution automatically reshaped around Wall Street session hours.
+                  </p>
+                </div>
+                <div className="text-right font-mono text-xs text-graphite-500">
+                  Bin Step: <span className="text-graphite-100">25 bps (0.25%)</span>
+                </div>
+              </div>
 
-          <BinLiquidityHeatmap
-            state={stateResult.state}
-            activeBinId={activeBinId}
-            activePrice={activePrice}
-            targetRange={targetRange}
-            feeInfo={feeInfo}
-            volatilityAccumulator={feeInfo.volatilityAccumulator}
-          />
-        </section>
+              <BinLiquidityHeatmap
+                state={stateResult.state}
+                activeBinId={activeBinId}
+                activePrice={activePrice}
+                targetRange={targetRange}
+                feeInfo={feeInfo}
+                volatilityAccumulator={feeInfo.volatilityAccumulator}
+              />
+            </section>
 
-        {/* Two-Column Grid: Session Ticker & Impact Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Section 3: Session Ticker / Structured Keeper Telemetry */}
-          <section id="session-ticker" className="flex flex-col">
-            <div className="mb-3">
-              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
-                Section 3 • Keeper Rebalance Event Log
-              </h2>
-              <p className="text-xs font-sans text-graphite-500 mt-0.5">
-                Structured machine-readable feed recorded to <code>rebalance-log.json</code>.
-              </p>
-            </div>
-            <SessionTicker logs={logs} />
-          </section>
+            {/* Two-Column Grid: Session Ticker & Impact Panel */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Section 3: Session Ticker / Structured Keeper Telemetry */}
+              <section id="session-ticker" className="flex flex-col">
+                <div className="mb-3">
+                  <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
+                    Section 3 • Keeper Rebalance Event Log
+                  </h2>
+                  <p className="text-xs font-sans text-graphite-500 mt-0.5">
+                    Structured machine-readable feed recorded to <code>rebalance-log.json</code>.
+                  </p>
+                </div>
+                <SessionTicker logs={logs} />
+              </section>
 
-          {/* Section 4: Impact Panel / Comparative Simulation */}
-          <section id="impact-panel" className="flex flex-col">
-            <div className="mb-3">
-              <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
-                Section 4 • Capital Protection Impact
-              </h2>
-              <p className="text-xs font-sans text-graphite-500 mt-0.5">
-                MarketClock dynamic reshaper vs. static 60-bin concentrated LP baseline.
-              </p>
+              {/* Section 4: Impact Panel / Comparative Simulation */}
+              <section id="impact-panel" className="flex flex-col">
+                <div className="mb-3">
+                  <h2 className="font-mono text-xs uppercase tracking-widest text-graphite-500 font-semibold">
+                    Section 4 • Capital Protection Impact
+                  </h2>
+                  <p className="text-xs font-sans text-graphite-500 mt-0.5">
+                    MarketClock dynamic reshaper vs. static 60-bin concentrated LP baseline.
+                  </p>
+                </div>
+                <ImpactPanel data={backtestData} />
+              </section>
             </div>
-            <ImpactPanel data={backtestData} />
-          </section>
-        </div>
+          </>
+        )}
+
+        {/* Tab 2: DBC Launchpad Studio (Novel Curves & End-to-End Stack Flow) */}
+        {activeTab === "launchpad" && <DbcLaunchpadStudio />}
+
+        {/* Tab 3: DBC Config Preset Marketplace */}
+        {activeTab === "marketplace" && <PresetMarketplace />}
+
+        {/* Tab 4: Developer Data Streams & SDK Tooling */}
+        {activeTab === "developer" && <DevDataStreamPanel />}
       </div>
 
       {/* Section 5: Footer with Program IDs & Mechanism Details */}
