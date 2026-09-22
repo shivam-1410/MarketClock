@@ -1,5 +1,28 @@
 [
   {
+    "id": "reb_1790072594163_417",
+    "timestamp": "2026-09-22T10:23:14.163Z",
+    "state": "OPEN",
+    "nyseTimeFormatted": "2026-04-15 11:00:00 ET",
+    "activeBin": 10,
+    "activePrice": 1.1046221254112045,
+    "oldRange": null,
+    "newRange": [
+      0,
+      20
+    ],
+    "strategyType": "Curve",
+    "strategyTypeEnum": 1,
+    "txSignature": "50cc1c5b8126edf1bdeee2461164c9a01b8ac04df4c1DevnetMC",
+    "baseFeeBps": 50,
+    "dynamicFeeBps": 0,
+    "totalFeeBps": 50,
+    "reason": "Market state transitioned to OPEN — reshaped range to [0, 20] (Curve)",
+    "status": "CONFIRMED",
+    "poolAddress": "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+    "explorerUrl": "https://explorer.solana.com/tx/50cc1c5b8126edf1bdeee2461164c9a01b8ac04df4c1DevnetMC?cluster=devnet"
+  },
+  {
     "id": "reb_1790067421409_420",
     "timestamp": "2026-09-22T08:57:01.409Z",
     "state": "CLOSED",
