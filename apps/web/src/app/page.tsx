@@ -301,9 +301,9 @@ export default function Home() {
       </header>
 
       {/* Main Content Container (Single Scroll for Judges) */}
-      <div className="max-w-6xl mx-auto px-6 py-8 flex-1 w-full space-y-10">
-        {/* Section 1: Hero Radial Dial */}
-        <section id="hero-clock" className="pt-2">
+      <div className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full space-y-16 md:space-y-20">
+        {/* Section 1: Hero Radial Dial (Floating prominently with generous whitespace) */}
+        <section id="hero-clock" className="pt-4 pb-6 md:pt-6 md:pb-10 flex flex-col items-center">
           <MarketClockDial
             stateResult={stateResult}
             selectedTimeMode={selectedTimeMode}

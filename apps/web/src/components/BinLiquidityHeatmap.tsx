@@ -95,7 +95,7 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
   const spreadPct = ((maxPrice - minPrice) / activePrice) * 100;
 
   return (
-    <div className="bg-graphite-900 border border-graphite-800 rounded-2xl p-6 shadow-xl state-transition">
+    <div className="bg-graphite-900 border border-[#232834] rounded-2xl p-6 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.5),0_1px_1px_0_rgba(255,255,255,0.02)] state-transition">
       {/* Header bar with metrics */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-graphite-800 pb-5">
         <div>
