@@ -50,21 +50,30 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
       const inRange = binId >= targetRange.minBinId && binId <= targetRange.maxBinId;
       const isActive = binId === activeBinId;
 
-      // Calculate simulated liquidity depth
-      let depth = 0;
+      // Modeled Liquidity Weight & Height/Opacity Mapping
+      let weight = 0;
+      let heightPct = 6;
+      let opacity = 0.12;
+
       if (inRange) {
         if (targetRange.strategyTypeName === "Curve") {
-          // Bell curve distribution centered on active bin
-          const stdDev = targetRange.halfWidth * 0.45 || 5;
-          const exponent = -Math.pow(offset, 2) / (2 * Math.pow(stdDev, 2));
-          depth = 0.25 + 0.75 * Math.exp(exponent);
+          // Concentrated Gaussian bell curve for Curve strategy (OPEN, COOL_DOWN, PRE_OPEN)
+          const sigma = Math.max(3, targetRange.halfWidth * 0.42);
+          weight = Math.exp(-Math.pow(offset, 2) / (2 * Math.pow(sigma, 2)));
+          // Range from 20% at boundary to 94% at center active peak
+          heightPct = Math.round(20 + weight * 74);
+          opacity = Math.min(1.0, +(0.38 + weight * 0.58).toFixed(3));
         } else {
-          // Spot uniform distribution
-          depth = 0.65;
+          // Flat uniform distribution for Spot strategy (CLOSED, PRE_CLOSE wide)
+          weight = 0.52;
+          heightPct = 48; // Clean, uniform rectangular shelf of liquidity
+          opacity = 0.70;
         }
       } else {
-        // Ambient background depth outside active managed position
-        depth = 0.08;
+        // Outside managed position: minimal ambient floor
+        weight = 0;
+        heightPct = 6;
+        opacity = 0.12;
       }
 
       list.push({
@@ -72,8 +81,10 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
         offset,
         inRange,
         isActive,
-        depth: Math.min(1.0, Math.max(0.05, depth)),
-        price: activePrice * Math.pow(1.0025, offset), // Assuming 25 bps binStep
+        weight,
+        heightPct,
+        opacity,
+        price: activePrice * Math.pow(1.0025, offset), // 25 bps binStep
       });
     }
     return list;
@@ -156,50 +167,50 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
         <div className="flex items-center justify-between text-xs font-mono text-graphite-500 mb-2">
           <span>Lower Price Bound: ${minPrice.toFixed(2)}</span>
           <span className="text-graphite-100 font-semibold flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: stateColor }} />
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
             Active Bin #{activeBinId}
           </span>
           <span>Upper Price Bound: ${maxPrice.toFixed(2)}</span>
         </div>
 
         {/* Heatmap Strip */}
-        <div className="relative h-28 bg-graphite-950/80 rounded-xl border border-graphite-800/80 flex items-end gap-1 px-3 py-2 overflow-hidden state-transition">
+        <div className="relative h-28 bg-graphite-950/80 rounded-xl border border-graphite-800/80 flex items-end gap-1 px-3 py-2 overflow-hidden">
           {bins.map((bin) => {
-            const barHeightPct = Math.round(bin.depth * 100);
             return (
               <div
                 key={bin.binId}
                 className="flex-1 h-full flex flex-col justify-end items-center group relative cursor-pointer"
               >
-                {/* Bar */}
+                {/* Active marker indicator needle - restrained "you are here" cue */}
+                {bin.isActive && (
+                  <div className="absolute -top-1.5 flex flex-col items-center pointer-events-none z-10">
+                    <span className="text-[9px] leading-none text-white/90 font-mono select-none">▼</span>
+                  </div>
+                )}
+
+                {/* Bar with 300ms eased transition on height and opacity */}
                 <div
-                  className="w-full rounded-t-sm state-transition"
+                  className="w-full rounded-t-sm"
                   style={{
-                    height: `${barHeightPct}%`,
+                    height: `${bin.heightPct}%`,
+                    opacity: bin.isActive ? 1.0 : bin.opacity,
                     backgroundColor: bin.isActive
                       ? "#FFFFFF"
                       : bin.inRange
                       ? stateColor
-                      : "#2B313D",
-                    opacity: bin.isActive ? 1.0 : bin.inRange ? 0.35 + bin.depth * 0.6 : 0.25,
-                    boxShadow: bin.isActive ? `0 0 12px ${stateColor}` : "none",
+                      : "#232832",
+                    boxShadow: bin.isActive ? "0 0 4px rgba(255, 255, 255, 0.4)" : "none",
+                    transition:
+                      "height 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease-out",
                   }}
                 />
-
-                {/* Active marker needle */}
-                {bin.isActive && (
-                  <div
-                    className="absolute -top-1 w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: "#FFFFFF" }}
-                  />
-                )}
 
                 {/* Hover Tooltip */}
                 <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center pointer-events-none z-20">
                   <div className="bg-graphite-800 border border-graphite-700 px-2 py-1 rounded text-[10px] font-mono text-graphite-100 whitespace-nowrap shadow-lg">
                     Bin #{bin.binId} • ${bin.price.toFixed(2)}
                     <br />
-                    Depth: {(bin.depth * 100).toFixed(0)}% • {bin.inRange ? "Inside Range" : "Outside"}
+                    Weight: {(bin.weight * 100).toFixed(1)}% • {bin.inRange ? `Managed (${targetRange.strategyTypeName})` : "Unallocated"}
                   </div>
                 </div>
               </div>

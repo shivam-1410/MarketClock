@@ -253,8 +253,9 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
           return (
             <button
               key={mode.id}
+              id={`simulate-btn-${mode.id.toLowerCase()}`}
               onClick={() => onSelectTimeMode(mode.id)}
-              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors ${
+              className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors cursor-pointer ${
                 isActive
                   ? "bg-graphite-800 text-graphite-100 border border-graphite-700 shadow-sm"
                   : "text-graphite-500 hover:text-graphite-100 hover:bg-graphite-850"
