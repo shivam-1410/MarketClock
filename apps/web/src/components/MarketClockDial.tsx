@@ -208,7 +208,7 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
                 strokeWidth="8"
                 strokeOpacity="0.22"
                 strokeLinecap="round"
-                className="state-transition"
+                className="transition-all duration-350 ease-out"
               />
             )}
 
@@ -220,7 +220,7 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
                 stroke={stateTheme.accentHex}
                 strokeWidth="8"
                 strokeLinecap="round"
-                className="state-transition"
+                className="transition-all duration-350 ease-out"
               />
             )}
 
@@ -248,33 +248,56 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
               );
             })}
 
-            {/* Next Transition Boundary Marker */}
-            <circle
-              cx={transPt.x}
-              cy={transPt.y}
-              r="4.5"
-              fill="#FFFFFF"
-              stroke={stateTheme.accentHex}
-              strokeWidth="2"
-              className="state-transition"
-            />
+            {/* Next Transition Boundary Marker (Rotates smoothly with 350ms cubic-bezier transition) */}
+            <g
+              style={{
+                transform: `rotate(${endAngleDeg}deg)`,
+                transformOrigin: "160px 160px",
+                transition: "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <circle
+                cx="160"
+                cy="45"
+                r="4.5"
+                fill="#FFFFFF"
+                stroke={stateTheme.accentHex}
+                strokeWidth="2"
+                className="transition-colors duration-350"
+              />
+            </g>
 
-            {/* Encoding 2: Live Hand / Marker showing current NYSE time */}
-            <g className="state-transition">
+            {/* Encoding 2: Live Hand Pointer (Rotates smoothly to new hour with 350ms cubic-bezier transition) */}
+            <g
+              style={{
+                transform: `rotate(${currentAngleDeg}deg)`,
+                transformOrigin: "160px 160px",
+                transition: "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
               <line
-                x1={backPt.x}
-                y1={backPt.y}
-                x2={handPt.x}
-                y2={handPt.y}
+                x1="160"
+                y1="176"
+                x2="160"
+                y2="64"
                 stroke={stateTheme.accentHex}
                 strokeWidth="2.5"
                 strokeLinecap="round"
+                className="transition-colors duration-350"
               />
-              <circle cx={handPt.x} cy={handPt.y} r="4" fill="#FFFFFF" stroke={stateTheme.accentHex} strokeWidth="2" />
+              <circle
+                cx="160"
+                cy="64"
+                r="4"
+                fill="#FFFFFF"
+                stroke={stateTheme.accentHex}
+                strokeWidth="2"
+                className="transition-colors duration-350"
+              />
             </g>
 
             {/* Center Hub */}
-            <circle cx="160" cy="160" r="9" fill="#1C2028" stroke={stateTheme.accentHex} strokeWidth="2" />
+            <circle cx="160" cy="160" r="9" fill="#1C2028" stroke={stateTheme.accentHex} strokeWidth="2" className="transition-colors duration-350" />
             <circle cx="160" cy="160" r="3.5" fill="#E8E9EC" />
           </svg>
 

@@ -85,6 +85,27 @@ export const SessionTicker: React.FC<SessionTickerProps> = ({ logs }) => {
         </div>
       </div>
 
+      {/* Keyframe animation for new incoming log entries */}
+      <style>{`
+        @keyframes feedItemEntry {
+          0% {
+            opacity: 0;
+            transform: translateY(-8px);
+            border-color: rgba(47, 191, 158, 0.7);
+            background-color: rgba(47, 191, 158, 0.12);
+          }
+          60% {
+            border-color: rgba(47, 191, 158, 0.4);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            border-color: #1f242e;
+            background-color: rgba(15, 17, 23, 0.7);
+          }
+        }
+      `}</style>
+
       {/* Log Feed Items */}
       <div className="mt-4 space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
         {filteredLogs.length === 0 ? (
@@ -96,6 +117,13 @@ export const SessionTicker: React.FC<SessionTickerProps> = ({ logs }) => {
             <div
               key={entry.id}
               className="bg-graphite-950/70 border border-graphite-850 hover:border-graphite-800 rounded-xl p-3.5 transition-colors font-mono text-xs text-graphite-100"
+              style={
+                entry.id.startsWith("reb_sim_")
+                  ? {
+                      animation: "feedItemEntry 250ms ease-out forwards",
+                    }
+                  : undefined
+              }
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5">

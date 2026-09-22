@@ -175,19 +175,26 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
 
         {/* Heatmap Strip */}
         <div className="relative h-28 bg-graphite-950/80 rounded-xl border border-graphite-800/80 flex items-end gap-1 px-3 py-2 overflow-hidden">
+          {/* Gliding active marker needle - smoothly glides across bins in 300ms */}
+          <div
+            className="absolute top-1 pointer-events-none z-20 flex flex-col items-center"
+            style={{
+              left: `calc(12px + ${((bins.findIndex((b) => b.isActive) !== -1 ? bins.findIndex((b) => b.isActive) + 0.5 : displayWindowHalf + 0.5) / bins.length)} * (100% - 24px))`,
+              transform: "translateX(-50%)",
+              transition: "left 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+            }}
+          >
+            <span className="text-[10px] leading-none text-white font-mono select-none drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+              ▼
+            </span>
+          </div>
+
           {bins.map((bin) => {
             return (
               <div
                 key={bin.binId}
                 className="flex-1 h-full flex flex-col justify-end items-center group relative cursor-pointer"
               >
-                {/* Active marker indicator needle - restrained "you are here" cue */}
-                {bin.isActive && (
-                  <div className="absolute -top-1.5 flex flex-col items-center pointer-events-none z-10">
-                    <span className="text-[9px] leading-none text-white/90 font-mono select-none">▼</span>
-                  </div>
-                )}
-
                 {/* Bar with 300ms eased transition on height and opacity */}
                 <div
                   className="w-full rounded-t-sm"
@@ -199,9 +206,9 @@ export const BinLiquidityHeatmap: React.FC<BinLiquidityHeatmapProps> = ({
                       : bin.inRange
                       ? stateColor
                       : "#232832",
-                    boxShadow: bin.isActive ? "0 0 4px rgba(255, 255, 255, 0.4)" : "none",
+                    boxShadow: bin.isActive ? "0 0 6px rgba(255, 255, 255, 0.5)" : "none",
                     transition:
-                      "height 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease-out",
+                      "height 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease-out, box-shadow 300ms ease-out",
                   }}
                 />
 

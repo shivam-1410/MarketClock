@@ -241,6 +241,86 @@ export default function Home() {
     };
   }, [stateResult]);
 
+  // Handle simulate button clicks: smoothly glide active bin & prepend animated keeper log
+  const handleSelectTimeMode = React.useCallback(
+    (mode: string) => {
+      setSelectedTimeMode(mode);
+      if (mode === "LIVE") return;
+
+      let simDate = currentTime;
+      let simBin = 1500;
+      let simPrice = 184.25;
+      let reasonText = "";
+
+      switch (mode) {
+        case "OPEN":
+          simDate = createNyseDate(2026, 4, 15, 11, 30, 0);
+          simBin = 1502;
+          simPrice = 184.45;
+          reasonText = "Simulated tick: Transitioned to OPEN. Concentrated liquidity reshaped into Curve (±10 bins) around active price.";
+          break;
+        case "PRE_CLOSE":
+          simDate = createNyseDate(2026, 4, 15, 15, 52, 0);
+          simBin = 1498;
+          simPrice = 183.85;
+          reasonText = "Simulated tick: Transitioned to PRE_CLOSE. Volatility widening factor active, expanding range towards closing bell.";
+          break;
+        case "CLOSED":
+          simDate = createNyseDate(2026, 4, 15, 20, 0, 0);
+          simBin = 1500;
+          simPrice = 184.25;
+          reasonText = "Simulated tick: Reference market closed. Deployed defensive wide Spot (±80 bins) to immunize against gaps.";
+          break;
+        case "PRE_OPEN":
+          simDate = createNyseDate(2026, 4, 15, 9, 30, 0);
+          simBin = 1501;
+          simPrice = 184.30;
+          reasonText = "Simulated tick: PRE_OPEN auction imbalance buffer. Widened Curve with elevated dynamic fee.";
+          break;
+        case "COOL_DOWN":
+          simDate = createNyseDate(2026, 4, 15, 9, 35, 0);
+          simBin = 1503;
+          simPrice = 184.55;
+          reasonText = "Simulated tick: COOL_DOWN decay phase. Waiting for on-chain volatility accumulator to reset before narrowing.";
+          break;
+        default:
+          break;
+      }
+
+      // Smoothly glide active bin in heatmap
+      setActiveBinId(simBin);
+      setActivePrice(simPrice);
+
+      // Compute simulated state & range for newly prepended log item
+      const simState = getMarketClockState(simDate);
+      const simRange = computeTargetBinRange(simState, simBin, 25);
+      const feeBps = simState.state === "OPEN" ? 15 : simState.state === "CLOSED" ? 30 : 25;
+
+      const newLogEntry: RebalanceLogItem = {
+        id: `reb_sim_${Date.now()}`,
+        timestamp: simDate.toISOString(),
+        state: simState.state,
+        nyseTimeFormatted: simDate.toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) + " ET",
+        activeBin: simBin,
+        activePrice: simPrice,
+        oldRange: [targetRange.minBinId, targetRange.maxBinId],
+        newRange: [simRange.minBinId, simRange.maxBinId],
+        strategyType: simRange.strategyTypeName as "Curve" | "Spot",
+        txSignature: Array.from({ length: 44 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]).join(""),
+        baseFeeBps: 15,
+        dynamicFeeBps: feeBps - 15,
+        totalFeeBps: feeBps,
+        reason: reasonText,
+        status: "CONFIRMED",
+        poolAddress: "118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo",
+        explorerUrl: "https://explorer.solana.com/address/118MVR5DAKXHkNtRMhyHyjuQZzDN44c3gGT1if1mYMo?cluster=devnet",
+      };
+
+      setLogs((prev) => [newLogEntry, ...prev.slice(0, 24)]);
+    },
+    [currentTime, targetRange]
+  );
+
   // Fetch telemetry logs from static JSON or API
   React.useEffect(() => {
     fetch("/data/rebalance-log.json")
@@ -315,7 +395,7 @@ export default function Home() {
           <MarketClockDial
             stateResult={stateResult}
             selectedTimeMode={selectedTimeMode}
-            onSelectTimeMode={setSelectedTimeMode}
+            onSelectTimeMode={handleSelectTimeMode}
           />
         </section>
 
