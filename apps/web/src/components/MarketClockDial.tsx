@@ -64,10 +64,6 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
     }
   }, [state]);
 
-  // Calculate current hand angle on a 24-hour clock face (0h at top = -90 deg)
-  const hourFraction = (nyseLocalTime.hour + nyseLocalTime.minute / 60 + nyseLocalTime.second / 3600) / 24;
-  const handAngleDeg = hourFraction * 360 - 90;
-
   // Format countdown string
   const formatCountdown = (totalSec: number) => {
     const hours = Math.floor(totalSec / 3600);
@@ -79,8 +75,64 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   };
 
+  // 1. Current NYSE time fraction and angle on 24-hour dial (0h = top, clockwise)
+  const currentHour = nyseLocalTime.hour + nyseLocalTime.minute / 60 + nyseLocalTime.second / 3600;
+  const currentAngleDeg = (currentHour / 24) * 360;
+
+  // Helper to extract NYSE hour fraction (0.0 - 24.0) from Date
+  const getNyseHourFraction = (d: Date) => {
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/New_York",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+      }).formatToParts(d);
+      const h = parseInt(parts.find((p) => p.type === "hour")?.value || "0", 10);
+      const m = parseInt(parts.find((p) => p.type === "minute")?.value || "0", 10);
+      const s = parseInt(parts.find((p) => p.type === "second")?.value || "0", 10);
+      return (h % 24) + m / 60 + s / 3600;
+    } catch {
+      return d.getUTCHours() - 4 + d.getUTCMinutes() / 60;
+    }
+  };
+
+  // Phase start and end angles for the CURRENT phase (not static 24h)
+  const { startAngleDeg, endAngleDeg } = React.useMemo(() => {
+    let startH = 0;
+    let endH = 24;
+
+    const { sessionTimes, nextTransition } = stateResult;
+    endH = getNyseHourFraction(nextTransition.targetTime);
+
+    switch (state) {
+      case "OPEN":
+        startH = getNyseHourFraction(sessionTimes.coolDownEndTime);
+        break;
+      case "COOL_DOWN":
+        startH = getNyseHourFraction(sessionTimes.openTime);
+        break;
+      case "PRE_CLOSE":
+        startH = getNyseHourFraction(sessionTimes.preCloseStartTime);
+        break;
+      case "PRE_OPEN":
+        startH = getNyseHourFraction(sessionTimes.openTime) - 15 / 3600;
+        break;
+      case "CLOSED":
+      default:
+        startH = getNyseHourFraction(sessionTimes.closeTime);
+        break;
+    }
+
+    return {
+      startAngleDeg: (startH / 24) * 360,
+      endAngleDeg: (endH / 24) * 360,
+    };
+  }, [state, stateResult]);
+
   // Helper to convert time fraction to SVG polar coordinates
-  // Center is (160, 160), radius is 115
+  // Center is (160, 160), radius is 115; 0 deg = top (00h)
   const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
     const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
     return {
@@ -89,126 +141,167 @@ export const MarketClockDial: React.FC<MarketClockDialProps> = ({
     };
   };
 
-  const describeArc = (x: number, y: number, radius: number, startAngle: number, endAngle: number) => {
-    const start = polarToCartesian(x, y, radius, endAngle);
-    const end = polarToCartesian(x, y, radius, startAngle);
-    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    return ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+  const describeClockArc = (centerX: number, centerY: number, radius: number, startAngle: number, endAngle: number) => {
+    let sweep = endAngle - startAngle;
+    while (sweep < 0) sweep += 360;
+    if (sweep >= 360) sweep = 359.99;
+    if (sweep < 0.5) return "";
+
+    const start = polarToCartesian(centerX, centerY, radius, startAngle);
+    const end = polarToCartesian(centerX, centerY, radius, startAngle + sweep);
+    const largeArcFlag = sweep > 180 ? "1" : "0";
+    return ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(" ");
   };
 
-  // 24-hour circle angles (00:00 = 0 deg, 09:30 = 142.5 deg, 16:00 = 240 deg)
-  const sessionArc = describeArc(160, 160, 115, (9.5 / 24) * 360, (16.0 / 24) * 360);
-  const preCloseArc = describeArc(160, 160, 115, (15.75 / 24) * 360, (16.0 / 24) * 360);
-  const coolDownArc = describeArc(160, 160, 115, (9.5 / 24) * 360, ((9.5 + 10 / 60) / 24) * 360);
+  // Encoding 1: Elapsed arc vs Remaining arc in the CURRENT phase
+  const elapsedArcPath = describeClockArc(160, 160, 115, startAngleDeg, currentAngleDeg);
+  const remainingArcPath = describeClockArc(160, 160, 115, currentAngleDeg, endAngleDeg);
+
+  // Next transition boundary marker position
+  const transPt = polarToCartesian(160, 160, 115, endAngleDeg);
+
+  // Encoding 2: Live Hand Pointer coordinates
+  const handPt = polarToCartesian(160, 160, 96, currentAngleDeg);
+  const backPt = polarToCartesian(160, 160, 16, currentAngleDeg + 180);
 
   return (
     <div className="flex flex-col items-center">
-      {/* Radial Dial Container with dynamic state-driven glow */}
-      <div
-        className={`relative w-72 h-72 md:w-80 md:h-80 rounded-full bg-graphite-900 border border-graphite-800 flex items-center justify-center state-transition ${stateTheme.glowClass}`}
-        style={{
-          boxShadow: `0 0 60px -10px ${stateTheme.accentHex}40`,
-        }}
-      >
-        <svg viewBox="0 0 320 320" className="w-full h-full">
-          <defs>
-            {/* Ambient inner glow */}
-            <radialGradient id="dialGlow" cx="50%" cy="50%" r="50%">
-              <stop offset="60%" stopColor="#12151A" />
-              <stop offset="95%" stopColor={stateTheme.accentHex} stopOpacity="0.12" />
-              <stop offset="100%" stopColor={stateTheme.accentHex} stopOpacity="0.25" />
-            </radialGradient>
-          </defs>
+      {/* Radial Dial Container with soft atmospheric glow */}
+      <div className="relative flex items-center justify-center">
+        {/* Soft Radial Glow behind dial with 350ms crossfade on state change */}
+        <div
+          className="absolute -inset-8 md:-inset-14 rounded-full pointer-events-none blur-3xl opacity-30 transition-all duration-350 ease-out -z-10"
+          style={{
+            background: `radial-gradient(circle at 50% 50%, ${stateTheme.accentHex} 0%, transparent 68%)`,
+          }}
+        />
 
-          {/* Dial Face Background */}
-          <circle cx="160" cy="160" r="140" fill="url(#dialGlow)" stroke="#1C2028" strokeWidth="2" />
+        <div
+          className={`relative w-72 h-72 md:w-80 md:h-80 rounded-full bg-graphite-900 border border-graphite-800 flex items-center justify-center state-transition ${stateTheme.glowClass}`}
+          style={{
+            boxShadow: `0 0 50px -10px ${stateTheme.accentHex}40`,
+          }}
+        >
+          <svg viewBox="0 0 320 320" className="w-full h-full">
+            <defs>
+              {/* Ambient inner dial gradient */}
+              <radialGradient id="dialGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="60%" stopColor="#12151A" />
+                <stop offset="95%" stopColor={stateTheme.accentHex} stopOpacity="0.08" />
+                <stop offset="100%" stopColor={stateTheme.accentHex} stopOpacity="0.20" />
+              </radialGradient>
+            </defs>
 
-          {/* Full 24H Track Ring */}
-          <circle cx="160" cy="160" r="115" fill="none" stroke="#1C2028" strokeWidth="8" />
+            {/* Dial Face Background */}
+            <circle cx="160" cy="160" r="140" fill="url(#dialGlow)" stroke="#1C2028" strokeWidth="2" />
 
-          {/* Regular NYSE Session Arc (09:30 - 16:00 ET) */}
-          <path d={sessionArc} fill="none" stroke="#E8B34A" strokeWidth="8" strokeOpacity="0.4" strokeLinecap="round" />
+            {/* Base 24H Track Ring */}
+            <circle cx="160" cy="160" r="115" fill="none" stroke="#1C2028" strokeWidth="8" />
 
-          {/* Cool-Down Arc Marker (09:30 - 09:40 ET) */}
-          <path d={coolDownArc} fill="none" stroke="#2FBF9E" strokeWidth="9" strokeLinecap="round" />
+            {/* Encoding 1: Arc showing elapsed vs. remaining time in CURRENT phase */}
+            {/* Remaining portion of current phase */}
+            {remainingArcPath && (
+              <path
+                d={remainingArcPath}
+                fill="none"
+                stroke={stateTheme.accentHex}
+                strokeWidth="8"
+                strokeOpacity="0.22"
+                strokeLinecap="round"
+                className="state-transition"
+              />
+            )}
 
-          {/* Pre-Close Arc Marker (15:45 - 16:00 ET) */}
-          <path d={preCloseArc} fill="none" stroke="#E0793C" strokeWidth="9" strokeLinecap="round" />
+            {/* Elapsed portion of current phase */}
+            {elapsedArcPath && (
+              <path
+                d={elapsedArcPath}
+                fill="none"
+                stroke={stateTheme.accentHex}
+                strokeWidth="8"
+                strokeLinecap="round"
+                className="state-transition"
+              />
+            )}
 
-          {/* 24-Hour Markers */}
-          {[0, 3, 6, 9, 12, 15, 18, 21].map((h) => {
-            const angle = (h / 24) * 360 - 90;
-            const pt1 = polarToCartesian(160, 160, 128, angle + 90);
-            const pt2 = polarToCartesian(160, 160, 134, angle + 90);
-            const textPt = polarToCartesian(160, 160, 100, angle + 90);
-            return (
-              <g key={h}>
-                <line x1={pt1.x} y1={pt1.y} x2={pt2.x} y2={pt2.y} stroke="#8A8F9B" strokeWidth="1.5" strokeOpacity="0.6" />
-                <text
-                  x={textPt.x}
-                  y={textPt.y + 3}
-                  textAnchor="middle"
-                  fill="#8A8F9B"
-                  fontSize="9"
-                  fontFamily="JetBrains Mono, monospace"
-                  opacity="0.8"
-                >
-                  {String(h).padStart(2, "0")}h
-                </text>
-              </g>
-            );
-          })}
+            {/* 24-Hour Markers */}
+            {[0, 3, 6, 9, 12, 15, 18, 21].map((h) => {
+              const angle = (h / 24) * 360;
+              const pt1 = polarToCartesian(160, 160, 127, angle);
+              const pt2 = polarToCartesian(160, 160, 133, angle);
+              const textPt = polarToCartesian(160, 160, 100, angle);
+              return (
+                <g key={h}>
+                  <line x1={pt1.x} y1={pt1.y} x2={pt2.x} y2={pt2.y} stroke="#8A8F9B" strokeWidth="1.5" strokeOpacity="0.5" />
+                  <text
+                    x={textPt.x}
+                    y={textPt.y + 3}
+                    textAnchor="middle"
+                    fill="#8A8F9B"
+                    fontSize="9"
+                    fontFamily="JetBrains Mono, monospace"
+                    opacity="0.75"
+                  >
+                    {String(h).padStart(2, "0")}h
+                  </text>
+                </g>
+              );
+            })}
 
-          {/* Market Open Pin (09:30) */}
-          {(() => {
-            const pt = polarToCartesian(160, 160, 115, (9.5 / 24) * 360);
-            return <circle cx={pt.x} cy={pt.y} r="3" fill="#2FBF9E" />;
-          })()}
+            {/* Next Transition Boundary Marker */}
+            <circle
+              cx={transPt.x}
+              cy={transPt.y}
+              r="4.5"
+              fill="#FFFFFF"
+              stroke={stateTheme.accentHex}
+              strokeWidth="2"
+              className="state-transition"
+            />
 
-          {/* Market Close Pin (16:00) */}
-          {(() => {
-            const pt = polarToCartesian(160, 160, 115, (16.0 / 24) * 360);
-            return <circle cx={pt.x} cy={pt.y} r="3" fill="#E0793C" />;
-          })()}
+            {/* Encoding 2: Live Hand / Marker showing current NYSE time */}
+            <g className="state-transition">
+              <line
+                x1={backPt.x}
+                y1={backPt.y}
+                x2={handPt.x}
+                y2={handPt.y}
+                stroke={stateTheme.accentHex}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+              />
+              <circle cx={handPt.x} cy={handPt.y} r="4" fill="#FFFFFF" stroke={stateTheme.accentHex} strokeWidth="2" />
+            </g>
 
-          {/* Live Hand Pointer */}
-          {(() => {
-            const handAngleRad = (handAngleDeg * Math.PI) / 180;
-            const handLength = 98;
-            const tipX = 160 + handLength * Math.cos(handAngleRad);
-            const tipY = 160 + handLength * Math.sin(handAngleRad);
+            {/* Center Hub */}
+            <circle cx="160" cy="160" r="9" fill="#1C2028" stroke={stateTheme.accentHex} strokeWidth="2" />
+            <circle cx="160" cy="160" r="3.5" fill="#E8E9EC" />
+          </svg>
 
-            const backX = 160 - 18 * Math.cos(handAngleRad);
-            const backY = 160 - 18 * Math.sin(handAngleRad);
-
-            return (
-              <g className="state-transition">
-                <line
-                  x1={backX}
-                  y1={backY}
-                  x2={tipX}
-                  y2={tipY}
-                  stroke={stateTheme.accentHex}
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-                <circle cx={tipX} cy={tipY} r="4" fill={stateTheme.accentHex} />
-              </g>
-            );
-          })()}
-
-          {/* Center Hub */}
-          <circle cx="160" cy="160" r="10" fill="#1C2028" stroke={stateTheme.accentHex} strokeWidth="2" />
-          <circle cx="160" cy="160" r="4" fill="#E8E9EC" />
-        </svg>
-
-        {/* Center Overlay Time Badge */}
-        <div className="absolute flex flex-col items-center pointer-events-none mt-24">
-          <span className="font-mono text-xs text-graphite-500 tracking-wider uppercase">NYSE Time</span>
-          <span className="font-mono text-sm font-semibold text-graphite-100">
-            {String(nyseLocalTime.hour).padStart(2, "0")}:{String(nyseLocalTime.minute).padStart(2, "0")}:{String(nyseLocalTime.second).padStart(2, "0")} ET
-          </span>
+          {/* Center Overlay Time Badge */}
+          <div className="absolute flex flex-col items-center pointer-events-none mt-20">
+            <span className="font-mono text-[10px] text-graphite-500 tracking-wider uppercase">NYSE Time</span>
+            <span className="font-mono text-sm font-semibold text-graphite-100">
+              {String(nyseLocalTime.hour).padStart(2, "0")}:{String(nyseLocalTime.minute).padStart(2, "0")}:{String(nyseLocalTime.second).padStart(2, "0")} ET
+            </span>
+          </div>
         </div>
+      </div>
+
+      {/* One-line inline legend in small caps explaining dial encodings */}
+      <div className="mt-3.5 flex flex-wrap items-center justify-center gap-5 text-[10px] font-mono tracking-widest uppercase text-graphite-500">
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-1 rounded-full" style={{ backgroundColor: stateTheme.accentHex }} />
+          <span>Elapsed Phase</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2.5 h-1 rounded-full opacity-35" style={{ backgroundColor: stateTheme.accentHex }} />
+          <span>Remaining</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full border border-white" style={{ backgroundColor: stateTheme.accentHex }} />
+          <span>Next Transition</span>
+        </span>
       </div>
 
       {/* State Badge & Countdown Display */}
