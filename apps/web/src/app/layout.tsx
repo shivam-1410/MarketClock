@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ParallaxGridBackground } from "../components/ParallaxGridBackground";
 
 export const metadata: Metadata = {
   title: "MarketClock — Schedule-Aware Liquidity Manager for Meteora DLMM",
@@ -25,8 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className="min-h-screen bg-graphite-950 text-graphite-100 antialiased market-grid-bg selection:bg-state-open/20 selection:text-state-open">
-        <div className="chart-drift-overlay min-h-screen">
+      <body className="min-h-screen bg-[#0B0D10] text-graphite-100 antialiased selection:bg-state-open/20 selection:text-state-open relative">
+        <ParallaxGridBackground />
+        <div className="min-h-screen relative z-0">
           {children}
         </div>
       </body>
