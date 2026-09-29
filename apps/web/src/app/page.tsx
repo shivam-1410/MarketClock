@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import {
   getMarketClockState,
   createNyseDate,
@@ -15,6 +16,7 @@ import { Footer } from "@/components/Footer";
 import { NavigationTabs, ActiveTabId } from "@/components/NavigationTabs";
 import { DbcLaunchpadStudio } from "@/components/DbcLaunchpadStudio";
 import { PresetMarketplace } from "@/components/PresetMarketplace";
+import { EconomicsSection } from "@/components/EconomicsSection";
 import { DevDataStreamPanel } from "@/components/DevDataStreamPanel";
 
 // Fallback seed telemetry in case initial fetch is pending
@@ -176,6 +178,20 @@ export default function Home() {
     setActivePresetForStudio(preset);
     setActiveTab("launchpad");
   };
+
+  // Handle hash navigation (e.g. #economics)
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleHash = () => {
+        if (window.location.hash === "#economics") {
+          setActiveTab("economics");
+        }
+      };
+      handleHash();
+      window.addEventListener("hashchange", handleHash);
+      return () => window.removeEventListener("hashchange", handleHash);
+    }
+  }, []);
 
   // Poll real clock if LIVE mode
   React.useEffect(() => {
@@ -361,9 +377,16 @@ export default function Home() {
       <header className="border-b border-graphite-800/80 bg-graphite-950/80 backdrop-blur sticky top-0 z-50 px-6 py-4">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            {/* Clock icon */}
-            <div className="w-8 h-8 rounded-lg bg-graphite-850 border border-graphite-700 flex items-center justify-center">
-              <span className="font-mono text-base text-state-open font-bold">⏱</span>
+            {/* MarketClock Logo */}
+            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-graphite-700 bg-graphite-900 shadow-sm flex items-center justify-center shrink-0">
+              <Image
+                src="/market-clock-logo.png"
+                alt="MarketClock Logo"
+                width={32}
+                height={32}
+                className="object-cover"
+                priority
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -485,7 +508,10 @@ export default function Home() {
           <PresetMarketplace onApplyToStudio={handleApplyPresetToStudio} />
         )}
 
-        {/* Tab 4: Developer Data Streams & SDK Tooling */}
+        {/* Tab 4: Platform Economics (Folyum Architecture Model) */}
+        {activeTab === "economics" && <EconomicsSection />}
+
+        {/* Tab 5: Developer Data Streams & SDK Tooling */}
         {activeTab === "developer" && <DevDataStreamPanel />}
       </div>
 

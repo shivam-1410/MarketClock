@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export type ActiveTabId = "reshaper" | "launchpad" | "marketplace" | "developer";
+export type ActiveTabId = "reshaper" | "launchpad" | "marketplace" | "economics" | "developer";
 
 interface NavigationTabsProps {
   activeTab: ActiveTabId;
@@ -34,6 +34,14 @@ export const NavigationTabs: React.FC<NavigationTabsProps> = ({ activeTab, onSel
       icon: "⚡",
       badge: "4 PRESETS",
       badgeColor: "bg-blue-500/10 text-blue-400 border-blue-500/30",
+    },
+    {
+      id: "economics" as ActiveTabId,
+      name: "Platform Economics",
+      subtitle: "Modelled Fees & Yield",
+      icon: "📊",
+      badge: "MODEL",
+      badgeColor: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
     },
     {
       id: "developer" as ActiveTabId,

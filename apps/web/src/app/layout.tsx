@@ -17,6 +17,11 @@ export const metadata: Metadata = {
     "Automated Market Maker",
   ],
   authors: [{ name: "MarketClock Team" }],
+  icons: {
+    icon: "/market-clock-logo.png",
+    shortcut: "/market-clock-logo.png",
+    apple: "/market-clock-logo.png",
+  },
 };
 
 export default function RootLayout({
