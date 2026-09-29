@@ -3,11 +3,16 @@
 import React from "react";
 import { DBC_PRESET_MARKETPLACE, DbcPresetItem } from "@market-clock/bin-scheduler";
 
-export const PresetMarketplace: React.FC = () => {
+export interface PresetMarketplaceProps {
+  onApplyToStudio?: (preset: DbcPresetItem) => void;
+}
+
+export const PresetMarketplace: React.FC<PresetMarketplaceProps> = ({ onApplyToStudio }) => {
   const [selectedCategory, setSelectedCategory] = React.useState<string>("ALL");
   const [activePreset, setActivePreset] = React.useState<DbcPresetItem | null>(null);
   const [copiedId, setCopiedId] = React.useState<string | null>(null);
   const [deployedId, setDeployedId] = React.useState<string | null>(null);
+  const [appliedId, setAppliedId] = React.useState<string | null>(null);
 
   const filteredPresets = React.useMemo(() => {
     if (selectedCategory === "ALL") return DBC_PRESET_MARKETPLACE;
@@ -23,6 +28,37 @@ export const PresetMarketplace: React.FC = () => {
   const handleDeploy = (preset: DbcPresetItem) => {
     setDeployedId(preset.id);
     setTimeout(() => setDeployedId(null), 3500);
+  };
+
+  const handleApply = (preset: DbcPresetItem) => {
+    setAppliedId(preset.id);
+    if (onApplyToStudio) {
+      onApplyToStudio(preset);
+    }
+    setTimeout(() => setAppliedId(null), 2500);
+  };
+
+  const handleExportJson = (preset: DbcPresetItem) => {
+    const exportData = {
+      presetId: preset.id,
+      name: preset.name,
+      category: preset.category,
+      exportedAt: new Date().toISOString(),
+      meteoraDbcConfig: preset.config,
+      stats: preset.stats,
+      solanaCliCommand: preset.cliCommand,
+      migrationTarget: "Meteora DLMM Program LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${preset.id}-meteora-dbc.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -66,6 +102,7 @@ export const PresetMarketplace: React.FC = () => {
         {filteredPresets.map((preset) => {
           const isCopied = copiedId === preset.id;
           const isDeployed = deployedId === preset.id;
+          const isApplied = appliedId === preset.id;
 
           return (
             <div
@@ -118,24 +155,48 @@ export const PresetMarketplace: React.FC = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="mt-6 pt-4 border-t border-graphite-800/80 flex flex-wrap items-center justify-between gap-3">
-                <button
-                  onClick={() => setActivePreset(preset)}
-                  className="text-xs font-mono text-graphite-400 hover:text-white underline underline-offset-4 transition-colors"
-                >
-                  Inspect Parameters →
-                </button>
-
-                <div className="flex items-center gap-2">
+              <div className="mt-6 pt-4 border-t border-graphite-800/80 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <button
-                    onClick={() => handleCopyCli(preset)}
-                    className="px-3 py-1.5 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-graphite-700 text-xs font-mono text-white transition-colors"
+                    onClick={() => setActivePreset(preset)}
+                    className="text-xs font-mono text-graphite-400 hover:text-white underline underline-offset-4 transition-colors"
                   >
-                    {isCopied ? "✓ Copied CLI" : "Copy CLI"}
+                    Inspect Parameters →
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleExportJson(preset)}
+                      className="px-2.5 py-1.5 rounded-xl bg-graphite-950 hover:bg-graphite-800 border border-graphite-800 text-[11px] font-mono text-graphite-300 hover:text-white transition-colors flex items-center gap-1.5"
+                      title="Download JSON config for Solana CLI & Meteora SDK"
+                    >
+                      <span>↓</span>
+                      <span>JSON</span>
+                    </button>
+                    <button
+                      onClick={() => handleCopyCli(preset)}
+                      className="px-3 py-1.5 rounded-xl bg-graphite-800 hover:bg-graphite-700 border border-graphite-700 text-xs font-mono text-white transition-colors"
+                    >
+                      {isCopied ? "✓ Copied" : "Copy CLI"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => handleApply(preset)}
+                    className={`w-full py-2 rounded-xl text-xs font-mono font-semibold transition-all border flex items-center justify-center gap-1.5 ${
+                      isApplied
+                        ? "bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm"
+                        : "bg-graphite-950 hover:bg-graphite-800 text-amber-400 border-amber-500/30 hover:border-amber-500/50"
+                    }`}
+                  >
+                    <span>⚡</span>
+                    <span>{isApplied ? "Applied to Studio" : "Apply to Studio"}</span>
                   </button>
                   <button
                     onClick={() => handleDeploy(preset)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all shadow-md ${
+                    className={`w-full py-2 rounded-xl text-xs font-mono font-bold transition-all shadow-md ${
                       isDeployed
                         ? "bg-emerald-500 text-black border border-emerald-400"
                         : "bg-blue-600 hover:bg-blue-500 text-white"
@@ -201,13 +262,31 @@ export const PresetMarketplace: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <button
-                onClick={() => setActivePreset(null)}
-                className="px-4 py-2 rounded-xl bg-graphite-800 hover:bg-graphite-700 text-xs font-mono text-white transition-colors"
+                onClick={() => handleExportJson(activePreset)}
+                className="px-3.5 py-2 rounded-xl bg-graphite-950 hover:bg-graphite-800 border border-graphite-800 text-xs font-mono text-graphite-200 hover:text-white transition-colors flex items-center gap-1.5"
               >
-                Close Inspector
+                <span>↓ Download Config JSON</span>
               </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    handleApply(activePreset);
+                    setActivePreset(null);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-mono font-bold text-amber-300 transition-colors"
+                >
+                  ⚡ Apply to Studio
+                </button>
+                <button
+                  onClick={() => setActivePreset(null)}
+                  className="px-4 py-2 rounded-xl bg-graphite-800 hover:bg-graphite-700 text-xs font-mono text-white transition-colors"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

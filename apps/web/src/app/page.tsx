@@ -6,7 +6,7 @@ import {
   createNyseDate,
   MarketClockStateResult,
 } from "@market-clock/core";
-import { computeTargetBinRange } from "@market-clock/bin-scheduler";
+import { computeTargetBinRange, DbcPresetItem } from "@market-clock/bin-scheduler";
 import { MarketClockDial } from "@/components/MarketClockDial";
 import { BinLiquidityHeatmap } from "@/components/BinLiquidityHeatmap";
 import { SessionTicker, RebalanceLogItem } from "@/components/SessionTicker";
@@ -170,6 +170,12 @@ export default function Home() {
   const [backtestData, setBacktestData] = React.useState<BacktestData>(BACKTEST_FALLBACK);
   const [activeBinId, setActiveBinId] = React.useState<number>(1500);
   const [activePrice, setActivePrice] = React.useState<number>(184.25);
+  const [activePresetForStudio, setActivePresetForStudio] = React.useState<DbcPresetItem | null>(null);
+
+  const handleApplyPresetToStudio = (preset: DbcPresetItem) => {
+    setActivePresetForStudio(preset);
+    setActiveTab("launchpad");
+  };
 
   // Poll real clock if LIVE mode
   React.useEffect(() => {
@@ -467,10 +473,17 @@ export default function Home() {
         )}
 
         {/* Tab 2: DBC Launchpad Studio (Novel Curves & End-to-End Stack Flow) */}
-        {activeTab === "launchpad" && <DbcLaunchpadStudio />}
+        {activeTab === "launchpad" && (
+          <DbcLaunchpadStudio
+            initialPreset={activePresetForStudio}
+            onClearPreset={() => setActivePresetForStudio(null)}
+          />
+        )}
 
         {/* Tab 3: DBC Config Preset Marketplace */}
-        {activeTab === "marketplace" && <PresetMarketplace />}
+        {activeTab === "marketplace" && (
+          <PresetMarketplace onApplyToStudio={handleApplyPresetToStudio} />
+        )}
 
         {/* Tab 4: Developer Data Streams & SDK Tooling */}
         {activeTab === "developer" && <DevDataStreamPanel />}
